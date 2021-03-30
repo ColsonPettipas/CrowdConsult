@@ -48,17 +48,36 @@ namespace Adm4379Example.Pages
             int msSinceEpoch = (int)t.TotalSeconds*1000; // gets us the ms since epoch, which is the datetime format used throughout this project
 
             string case_id = Request.Form["case_id"]; // uses a hidden field to pass the case id which was parsed from the query string
-
-            List<Model.Responses> emptyResponses = new List<Model.Responses>();
-
-            var newResponse = new Model.Responses {
-                response_user = TempData.Peek("logged_in").ToString(), //only logged in users can post business cases, which is verified by getting to this page. Therefore TempData should always contain the email of the user.
-                response_description = Request.Form["response_content"],
-                response_datetime = msSinceEpoch,
-                response_is_best = false
-            };
+            bool isUpdate = Request.Form["isUpdate"] == "y";
             
-            MyCasesService.addResponse(newResponse, case_id);
+
+            if (isUpdate) {
+                string userEmail = Request.Form["userEmail"];
+                Cases rightCase = MyCasesService.GetCases().Where(x => x.id == case_id).ToList()[0];
+                List<Responses> allResponses = rightCase.Responses;
+                List<Responses> rightResponses = rightCase.Responses.Where(item => item.response_user.Equals(userEmail)).ToList();
+
+                foreach (Responses response in rightResponses) {
+                    allResponses.Remove(response);
+                    response.response_is_best = true;
+                    allResponses.Add(response);
+                    MyCasesService.updateResponses(allResponses, case_id);
+                }
+
+            } else {
+                List<Model.Responses> emptyResponses = new List<Model.Responses>();
+
+                var newResponse = new Model.Responses {
+                    response_user = TempData.Peek("logged_in").ToString(), //only logged in users can post business cases, which is verified by getting to this page. Therefore TempData should always contain the email of the user.
+                    response_description = Request.Form["response_content"],
+                    response_datetime = msSinceEpoch,
+                    response_is_best = false
+                };
+            
+                MyCasesService.addResponse(newResponse, case_id);
+            }
+
+            
 
             return Redirect("/Case?id=" + case_id);
         }

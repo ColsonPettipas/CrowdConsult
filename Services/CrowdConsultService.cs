@@ -49,6 +49,12 @@ namespace Adm4379Example.Services {
             );
         }
 
+        public void updateResponses(List<Responses> allResponses, string case_id)
+        {
+            var filter = Builders<Cases>.Filter.Eq(cases => cases.id, case_id);
+            var update = Builders<Cases>.Update.Set(cases => cases.Responses, allResponses);
+            _cases.UpdateOneAsync(filter, update);
+        }
         public void Remove(string id) {
             _cases.DeleteOne(cases => cases.id == id);
         }

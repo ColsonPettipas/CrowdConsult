@@ -26,6 +26,7 @@
             })(window,document,'script','dataLayer','GTM-KLDZ6Z2');
         </script>
         <!-- End Google Tag Manager -->
+        <asp:ScriptManager ID="scriptManager" runat="server" EnablePageMethods="true"/>
     </head>
     <body>
         <!-- Google Tag Manager (noscript) -->
@@ -90,6 +91,7 @@
                                 <form asp-page-handler="button" onsubmit="return validateResponseSubmission()" method="post">
                                     <textarea id="response_content" name="response_content" placeholder="Write your response..." style="height:300px"></textarea>
                                     <input type="hidden" id="case_id" name="case_id" value="@bcase.id">
+                                    <input type="hidden" id="isUpdate" name="isUpdate" value="n">
                                     <input type="submit" value="Submit" id="submit_response_btn">
                                 </form>
                                 <br>
@@ -106,6 +108,14 @@
                             <div style="text-align: left;">
                                 <div class="flex-wrapper">
                                     <div class="box2">
+                                        
+                                        <form asp-page-handler="button" name="Is Best" onsubmit="return validateResponseSubmission()" method="post">
+                                           <input type="hidden" id="case_id" name="case_id" value="@bcase.id">
+                                           <input type="hidden" id="userEmail" name="userEmail" value="@response.response_user">
+                                           <input type="hidden" id="isUpdate" name="isUpdate" value="y">
+                                           <input type="submit" value="Is Best" id="submit_response_btn">
+                                        </form>
+
                                         @foreach (var user in Model.Users) { 
                                             @if (response.response_user == user.email) {
                                                 <a class="underline" href="/User?id=@user.id"><h2 class="responder_name nopad">@user.name</h2></a>
